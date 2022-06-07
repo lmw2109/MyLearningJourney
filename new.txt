@@ -1,0 +1,17 @@
+git commands that proved usefull:
+
+git status
+
+# Shows the status of added files ready to commit and shows changes in existing files
+
+git add .
+
+# adds everything in a rep to commit stage
+
+git commit -m "commit message"
+
+# commits added files and changes to local repo
+
+git push -u origin main
+
+# pushes local branch to remote repo (github)
