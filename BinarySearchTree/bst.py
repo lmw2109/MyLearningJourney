@@ -1,4 +1,4 @@
-# This is a simple binary_search_tree implementation
+# This is my simple binary_search_tree implementation
 
 # Blueprint to a single node, sub-class of BST
 class Node:
@@ -100,9 +100,34 @@ class BinarySearchTree:
     ### ADDITIONAL COOL METHODS OF A BST ###
 
     # Traversal
+    def in_order_traversal(self, node):
+        # Check if tree is empty first 
+        if node is not None:
+            # Recursive call left sided nodes
+            in_order_traversal(node.left)
+            # Print the node (or use() method)
+            print(node)
+            # Recursive call right sided nodes
+            in_order_traversal(node.right)
 
     # Successor/Predecessor
+    def bst_successor(node):
+        ...
+
+    def bst_predecessor(node):
+        ...
 
     # Min/Max
+    def bst_maximum(self):
+        node = self.root
+        while node is not None:
+            node = node.right
+        return(node)
+
+    def bst_minimum(self):
+        node = self.root
+        while node is not None:
+            node = node.left
+        return(node)
 
     # Reassigning
