@@ -11,7 +11,7 @@ class Node:
         # and a reference to its child_nodes (in this case binary: l/r)
         self.left = left
         self.right = right
-        # optional: a reference to the parent node
+        # A reference to the parent node
         self.parent = parent
 
     def __repr__(self):
@@ -64,11 +64,44 @@ class BinarySearchTree:
 
     # Search
 
+    # Recursive implementation
+    def bst_search_recur(node, key):
+        # Check if tree is empty
+        if node is None: 
+            # If so return
+            return None
+        # Check if key is equal to specified key
+        if node.key == key: 
+            # If so: node is found!
+            return node
+        # Else compare keys and traverse tree accordingly (recursiv call l/r)
+        if node.key > key:
+            return bst_search_recur(node.left, key)
+        if node.key < key:
+            return bst_search_recur(node.right, key)
+
+    # Iterative implementation
+    def bst_search_iter(self, key):
+        # Start with root node
+        node = self.root
+        # While tree is empty and key has not been found 
+        while node is not None and node.key != key:
+            # If key is smaller walk left
+            if node.key > key:
+                node = node.left
+            # If key is larger walk right
+            elif node.key < key:
+                node = node.right
+        # At the end return the node
+        return node
+
     # Deletion
 
     ### ADDITIONAL COOL METHODS OF A BST ###
 
     # Traversal
+
+    # Successor/Predecessor
 
     # Min/Max
 
