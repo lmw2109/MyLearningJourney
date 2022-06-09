@@ -142,7 +142,7 @@ class BinarySearchTree:
             self.in_order_traversal(node.right)
 
     # Min/Max
-    def bst_maximum(self, node):
+    def bst_maximum(self):
         # Start at the root
         node = self.root
         # Loop to retrieve the right-most leaf
@@ -150,7 +150,7 @@ class BinarySearchTree:
             node = node.right
         return(node)
 
-    def bst_minimum(self, node):
+    def bst_minimum(self):
         # Start at the root
         node = self.root
         # Loop tp retrieve the left-most leaf
