@@ -16,7 +16,7 @@ class Node:
 
     def __repr__(self):
         # Returns a presentable print instead of default printable
-        return 'Object with key: ' + str(self.data)
+        return 'Object with key: ' + str(self.key) + ' and data: ' + str(self.data)
 
 # Blueprint to a BST
 class BinarySearchTree:
@@ -27,60 +27,31 @@ class BinarySearchTree:
 
     ### MAIN METHODS OF A BST ###
 
-    # Insertion
+    # Insertion 
     def bst_insert(self, new_node):
-        # key of new_node
         key = new_node.key
-        # starting node to be investigated
         node = self.root
-        # If there is nodes in the tree:
+
+        if node is None:
+            self.root = new_node
+            return
+            
         while node is not None:
             parent = node
-            # Check if key of node is equal to key of new_node
             if node.key == key:
                 print('Node is already in the tree!')
-            # Check if key of node is larger than key of new_node
+                return
             elif node.key > key:
-                # if so: walk left in the tree
                 node = node.left
-            # Check if key of node is smaller than key of new_node
             elif node.key < key:
-                # if so: walk right in the tree
                 node = node.right
-        # If there is no nodes in the tree:
-        if parent is None:
-            # Insert node into root
-            self.root = new_node
-        # If key of parent is larger than key of new_node
-        elif parent.key > key:
-            # insert new_node as left child
+        if parent.key > key:
             parent.left = new_node
-        # If key of parent is smaller than key of new_node
-        elif parent.key < key:
-            # insert new_node as right child
+        else:
             parent.right = new_node
-        # Tell new_node about its parent
         new_node.parent = parent
 
-    # Search
-
-    # Recursive implementation
-    def bst_search_recur(node, key):
-        # Check if tree is empty
-        if node is None: 
-            # If so return
-            return None
-        # Check if key is equal to specified key
-        if node.key == key: 
-            # If so: node is found!
-            return node
-        # Else compare keys and traverse tree accordingly (recursiv call l/r)
-        if node.key > key:
-            return bst_search_recur(node.left, key)
-        if node.key < key:
-            return bst_search_recur(node.right, key)
-
-    # Iterative implementation
+    # Search - iterative implementation
     def bst_search_iter(self, key):
         # Start with root node
         node = self.root
@@ -94,8 +65,20 @@ class BinarySearchTree:
                 node = node.right
         # At the end return the node
         return node
-
+ 
     # Deletion
+    # Case 1: Node is a leaf node
+    # Case 2: Node has one child.
+    # Case 3: Node has 2 children  
+    def bst_delete(self, node):
+        ...
+
+    # Helper function to delete a leaf-node
+    def _delete_leaf(self, node):
+        ...
+    # Helper function to shift nodes in a tree
+    def _shift_nodes(self, node):
+        ...
 
     ### ADDITIONAL COOL METHODS OF A BST ###
 
@@ -104,30 +87,40 @@ class BinarySearchTree:
         # Check if tree is empty first 
         if node is not None:
             # Recursive call left sided nodes
-            in_order_traversal(node.left)
+            self.in_order_traversal(node.left)
             # Print the node (or use() method)
             print(node)
             # Recursive call right sided nodes
-            in_order_traversal(node.right)
+            self.in_order_traversal(node.right)
 
     # Successor/Predecessor
-    def bst_successor(node):
-        ...
+    def bst_successor(self, node):
+        if node.right is not None:
+            return self.bst_minimum(node.right)
+        parent = node.parent
+        while parent is not None and node == parent.right:
+            node = node.parent
+            parent = node.parent.parent
+        return parent
 
-    def bst_predecessor(node):
-        ...
+    def bst_predecessor(self, node):
+        if node.left is not None:
+            return self.bst_maximum(node.left)
+        parent = node.parent
+        while parent is not None and node == parent.left:
+            node = node.parent
+            parent = node.parent.parent
+        return parent
 
     # Min/Max
-    def bst_maximum(self):
+    def bst_maximum(self, node):
         node = self.root
-        while node is not None:
+        while node.right is not None:
             node = node.right
         return(node)
 
-    def bst_minimum(self):
+    def bst_minimum(self, node):
         node = self.root
-        while node is not None:
+        while node.left is not None:
             node = node.left
         return(node)
-
-    # Reassigning
