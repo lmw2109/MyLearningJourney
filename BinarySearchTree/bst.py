@@ -29,26 +29,38 @@ class BinarySearchTree:
 
     # Insertion 
     def bst_insert(self, new_node):
+        # Key
         key = new_node.key
+        # Start with
         node = self.root
-
+        # Check if tree is empty
         if node is None:
+            # Insert root
             self.root = new_node
+            # and terminate the function
             return
-            
+        # Find appropriate parent for new_node
         while node is not None:
             parent = node
+            # Check if node is already in the tree
             if node.key == key:
                 print('Node is already in the tree!')
+                # and terminate the function
                 return
+            # If node key is larger than new_node key
             elif node.key > key:
+                # walk left
                 node = node.left
+            # If node key is smaller than new_node key
             elif node.key < key:
+                # walk right
                 node = node.right
+        # One parent has been found insert node accordingly
         if parent.key > key:
             parent.left = new_node
         else:
             parent.right = new_node
+        # Tell new_node about its parent
         new_node.parent = parent
 
     # Search - iterative implementation
