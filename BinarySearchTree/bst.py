@@ -14,6 +14,12 @@ class Node:
         # A reference to the parent node
         self.parent = parent
 
+    def visualize(self, level):
+        result = " "*4*level + f"{self.key}: {self.data}"
+        if self.left: result =  self.left.visualize(level + 1) + "\n" + result
+        if self.right: result += "\n" + self.right.visualize(level + 1)            
+        return result
+
     def __repr__(self):
         # Returns a presentable print instead of default printable
         return 'Object with key: ' + str(self.key) + ' and data: ' + str(self.data)
@@ -24,6 +30,10 @@ class BinarySearchTree:
     def __init__(self):
         # A tree has atleast a root
         self.root = None
+
+    def visualize(self):
+        if self.root:
+            print(self.root.visualize(0))
 
     ### MAIN METHODS OF A BST ###
 
@@ -55,7 +65,7 @@ class BinarySearchTree:
             elif node.key < key:
                 # walk right
                 node = node.right
-        # One parent has been found insert node accordingly
+        # Once parent has been found insert node accordingly
         if parent.key > key:
             parent.left = new_node
         else:
@@ -83,14 +93,40 @@ class BinarySearchTree:
     # Case 2: Node has one child.
     # Case 3: Node has 2 children  
     def bst_delete(self, node):
-        ...
+        # Check if node has less than 2 children
+        if not (node.left and node.right):
+            # If so call helper function to deal with cases 1 and 2
+            self._shift_nodes(node)
+        # Else we've got a case 3 on our hands!
+        else:
+            # Find predecessor
+            pred = node.left
+            while pred.right is not None:
+                pred = pred.right
+            # and overwrite the node to be deleted with it
+            node.key = pred.key
+            node.data = pred.data
+            # and remove predecessor from its previous location
+            self._shift_nodes(pred)
 
-    # Helper function to delete a leaf-node
-    def _delete_leaf(self, node):
-        ...
-    # Helper function to shift nodes in a tree
+    # Helper function to handle deletion and substitution
     def _shift_nodes(self, node):
-        ...
+        # Only one child so either l/r
+        child_node = node.left or node.right
+        # If node is not root of the tree
+        if node.parent:
+            # Check if node is a left node
+            if node.parent.left == node:
+                # and pull up child node to replace it
+                node.parent.left = child_node
+            else:
+                # else node must be right node
+                node.parent.right = child_node
+        else:
+            # Else node must be root
+            self.root = child_node
+        # Remove parent pointer
+        node.parent = None
 
     ### ADDITIONAL COOL METHODS OF A BST ###
 
@@ -105,34 +141,19 @@ class BinarySearchTree:
             # Recursive call right sided nodes
             self.in_order_traversal(node.right)
 
-    # Successor/Predecessor
-    def bst_successor(self, node):
-        if node.right is not None:
-            return self.bst_minimum(node.right)
-        parent = node.parent
-        while parent is not None and node == parent.right:
-            node = node.parent
-            parent = node.parent.parent
-        return parent
-
-    def bst_predecessor(self, node):
-        if node.left is not None:
-            return self.bst_maximum(node.left)
-        parent = node.parent
-        while parent is not None and node == parent.left:
-            node = node.parent
-            parent = node.parent.parent
-        return parent
-
     # Min/Max
     def bst_maximum(self, node):
+        # Start at the root
         node = self.root
+        # Loop to retrieve the right-most leaf
         while node.right is not None:
             node = node.right
         return(node)
 
     def bst_minimum(self, node):
+        # Start at the root
         node = self.root
+        # Loop tp retrieve the left-most leaf
         while node.left is not None:
             node = node.left
         return(node)
