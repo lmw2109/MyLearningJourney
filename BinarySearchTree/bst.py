@@ -14,14 +14,17 @@ class Node:
         # A reference to the parent node
         self.parent = parent
 
+    # Helps to visualize the tree by indenting nodes accordingly
+    # (Code from my lecture at Frankfurt School)
     def visualize(self, level):
         result = " "*4*level + f"{self.key}: {self.data}"
         if self.left: result =  self.left.visualize(level + 1) + "\n" + result
         if self.right: result += "\n" + self.right.visualize(level + 1)            
         return result
 
+    # Returns a presentable print instead of default printable
     def __repr__(self):
-        # Returns a presentable print instead of default printable
+        
         return 'Object with key: ' + str(self.key) + ' and data: ' + str(self.data)
 
 # Blueprint to a BST
@@ -31,6 +34,8 @@ class BinarySearchTree:
         # A tree has atleast a root
         self.root = None
 
+    # Method to visualize the tree!
+    # (Code from my lecture at Frankfurt School)
     def visualize(self):
         if self.root:
             print(self.root.visualize(0))
@@ -157,3 +162,13 @@ class BinarySearchTree:
         while node.left is not None:
             node = node.left
         return(node)
+
+    # Height
+    def bst_height(self, node):
+        # If tree is not empty
+        if node:
+            # Find the max of the node, increment by 1 and repeat recursively
+            return max(self.bst_height(node.left), self.bst_height(node.right)) + 1
+        # Else tree is empty so return hight = 0
+        else:
+            return 0
