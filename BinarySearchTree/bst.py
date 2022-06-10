@@ -172,3 +172,21 @@ class BinarySearchTree:
         # Else tree is empty so return hight = 0
         else:
             return 0
+    
+    # Count
+    def bst_count(self, node):
+        # Check if tree is empty
+        if self.root is None:
+            return 0
+        # Counter
+        count = 1
+        # If there is a left node
+        if node.left:
+            # increment count, recursive call
+            count += self.bst_count(node.left)
+        # If there is a right node
+        if node.right:
+            # increment count, recursive call
+            count += self.bst_count(node.right)
+        # finally return count
+        return count
