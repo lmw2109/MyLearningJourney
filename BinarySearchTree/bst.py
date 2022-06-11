@@ -24,7 +24,6 @@ class Node:
 
     # Returns a presentable print instead of default printable
     def __repr__(self):
-        
         return 'Object with key: ' + str(self.key) + ' and data: ' + str(self.data)
 
 # Blueprint to a BST
