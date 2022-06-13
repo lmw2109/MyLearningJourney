@@ -4,21 +4,23 @@
 
 class Node:
 
-    def __init__(self, key, data=None, left=None, right=None, parent=None):
+    def __init__(self, key, data=None, left=None, right=None, parent=None, bf=None):
         self.key = key
         self.data = data
         self.left = left
         self.right = right
         self.parent = parent
+        # The balance factor will determine the type of rotation that is needed to keep the tree balanced!
+        self.bf = bf
 
     def visualize(self, level):
-        result = " "*4*level + f"{self.key}: {self.data}"
+        result = " "*4*level + f"{self.key}: {self.bf}"
         if self.left: result =  self.left.visualize(level + 1) + "\n" + result
         if self.right: result += "\n" + self.right.visualize(level + 1)            
         return result
 
     def __repr__(self):
-        return 'Object with key: ' + str(self.key) + ' and data: ' + str(self.data)
+        return 'Object with key: ' + str(self.key) + ' and BF: ' + str(self.bf)
 
 class AdelsonVelskyLandis():
 
@@ -32,8 +34,7 @@ class AdelsonVelskyLandis():
     ### MAIN METHODS ###
 
     # Search
-    # -> Read only operation: like basic bst
-    def avl_search_iter(self, key):
+    def search_iter(self, key):
         node = self.root
         while node is not None and node.key != key:
             if node.key > key:
@@ -54,26 +55,61 @@ class AdelsonVelskyLandis():
 
     ### NODE ROTATION METHODS ###
 
+    # Balance factor helper function
+    def _cal_bf(self, node):
+        balance_factor = self.height(node.right) - self.height(node.left)
+        node.bf = balance_factor
+
     # Simple Rotations #
 
-    def _right_right():
+    def _rotate_left(self, y):
         ...
     
-    def _left_left():
-        ...
+    def _rotate_right(self, y):
+        # y is the left child of the left node we have to rotate around
+        # 'left-left situation'
+        # cache nodes that are needed for the operation
+        x = y.parent
+        u = x.parent
+        z = x.right
+        p = u.parent
+        # new parent of z
+        if z: # only if there is a z
+            z.parent = u
+        # new parent of x
+        x.parent = p
+        # new parent of u
+        u.parent = x
+        # new child of p is x
+        if p:
+            if u is p.left:
+                p.left = x
+            else:
+                p.right = x
+        # new left child of u is z
+        u.left = z
+        # new right child of x is u
+        x.right = u
+        # if root of tree has been involved
+        if x.parent is None:
+            # update the root
+            self.root = x
+        # recalculate balance factors
+        self._cal_bf(u)
+        self._cal_bf(x)
+        self._cal_bf(y)
 
     # Double Rotations #
 
-    def _right_left():
+    def _rotate_right_left():
         ...
 
-    def _left_right():
+    def _rotate_left_right():
         ...
 
     ### ADDITIONAL FUNCTIONS ###
 
     # Traversal
-    # -> like basic bst
     def in_order_traversal(self, node): 
         if node is not None:
             self.in_order_traversal(node.left)
@@ -81,30 +117,27 @@ class AdelsonVelskyLandis():
             self.in_order_traversal(node.right)
 
     # Min/Max
-    # -> like basic bst
-    def bst_maximum(self):
+    def maximum(self):
         node = self.root
         while node.right is not None:
             node = node.right
         return(node)
 
-    def bst_minimum(self):
+    def minimum(self):
         node = self.root
         while node.left is not None:
             node = node.left
         return(node)
 
     # Height
-    # -> like basic bst
-    def bst_height(self, node):
+    def height(self, node):
         if node:
-            return max(self.bst_height(node.left), self.bst_height(node.right)) + 1
+            return max(self.height(node.left), self.height(node.right)) + 1
         else:
             return 0
     
     # Count
-    # -> like basic bst
-    def bst_count(self, node):
+    def count(self, node):
         if self.root is None:
             return 0
         count = 1
@@ -113,3 +146,27 @@ class AdelsonVelskyLandis():
         if node.right:
             count += self.bst_count(node.right)
         return count
+
+    # TEMPORARY FOR TESTS
+
+    # Insertion 
+    def insert(self, new_node):
+        key = new_node.key
+        node = self.root
+        if node is None:
+            self.root = new_node
+            return
+        while node is not None:
+            parent = node
+            if node.key == key:
+                print('Node is already in the tree!')
+                return
+            elif node.key > key:
+                node = node.left
+            elif node.key < key:
+                node = node.right
+        if parent.key > key:
+            parent.left = new_node
+        else:
+            parent.right = new_node
+        new_node.parent = parent
