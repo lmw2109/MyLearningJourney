@@ -57,14 +57,48 @@ class AdelsonVelskyLandis():
 
     # Balance factor helper function
     def _cal_bf(self, node):
+        # bf = height(r-subtree) - height(l-subtree)
         balance_factor = self.height(node.right) - self.height(node.left)
+        # update node with its balance factor
         node.bf = balance_factor
 
     # Simple Rotations #
 
     def _rotate_left(self, y):
-        ...
-    
+        # y is the right child of the right node we have to rotate around
+        # 'right-right situation'
+        # cache nodes that are needed for the operation
+        x = y.parent
+        u = x.parent
+        z = x.left
+        p = u.parent
+        # new parent of z
+        if z: # only if there is a node z
+            z.parent = u
+        # new parent of x
+        x.parent = p
+        # new parent of u
+        u.parent = x
+        # new child of p is x
+        if p:
+            # find out if u is left or right child and insert x into that position
+            if u is p.left:
+                p.left = x
+            else:
+                p.right = x
+        # new right child of u is z
+        u.right = z
+        # new left child of x is u
+        x.left = u
+        # if root of tree has been involved
+        if x.parent is None:
+            # update the root
+            self.root = x
+        # recalculate balance factors
+        self._cal_bf(u)
+        self._cal_bf(x)
+        self._cal_bf(y)
+
     def _rotate_right(self, y):
         # y is the left child of the left node we have to rotate around
         # 'left-left situation'
@@ -74,7 +108,7 @@ class AdelsonVelskyLandis():
         z = x.right
         p = u.parent
         # new parent of z
-        if z: # only if there is a z
+        if z: # only if there is a node z
             z.parent = u
         # new parent of x
         x.parent = p
@@ -82,6 +116,7 @@ class AdelsonVelskyLandis():
         u.parent = x
         # new child of p is x
         if p:
+            # find out if u is left or right child and insert x into that position
             if u is p.left:
                 p.left = x
             else:
