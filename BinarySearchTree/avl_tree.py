@@ -45,8 +45,32 @@ class AdelsonVelskyLandis():
 
     # Insert
     # -> Dynamic change: requires rebalancing
-    def avl_insert():
-        ...
+    def avl_insert(self, new_node):
+        # standard insertion procedure
+        key = new_node.key
+        node = self.root
+        if node is None:
+            self.root = new_node
+            self.root.bf = 0
+            return
+        while node is not None:
+            parent = node
+            if node.key == key:
+                print('Node is already in the tree!')
+                return
+            elif node.key > key:
+                node = node.left
+            elif node.key < key:
+                node = node.right
+        if parent.key > key:
+            parent.left = new_node
+        else:
+            parent.right = new_node
+        new_node.parent = parent
+        # insert always as leaf: bf = 0
+        new_node.bf = 0
+        # update bf values and rotate if needed
+        self._rotation_decision_insert(new_node)
 
     # Delete
     # -> Dynamic change: requires rebalancing
@@ -61,15 +85,64 @@ class AdelsonVelskyLandis():
         balance_factor = self.height(node.right) - self.height(node.left)
         # update node with its balance factor
         node.bf = balance_factor
+        # optionally returns it
+        return balance_factor
+
+    # Retraces path to scan if tree is unbalanced
+    def _retrace(self, node):
+        # start with the newly inserted node
+        cur = node
+        # while path upwards has not reached root
+        while cur.parent is not None:
+            # calculate parents balance factor
+            self._cal_bf(cur.parent)
+            # print(cur.parent.bf)
+            if (cur.parent.bf is -2 or cur.parent.bf is 2):
+                # stop and pass balance factors
+                return [cur, cur.parent]
+            # take a step and repeat
+            cur = cur.parent
+        # Return if no node in range (-2, 2) was found
+        return
+    
+    def _rotation_decision_insert(self, node):
+        # retrace and find breakpoint
+        nodes = self._retrace(node)
+
+        ## TEMPORARY FOR TESTING ##
+        self.visualize()
+    
+        # In case there is no breakpoint return
+        if nodes == None:
+            return print('Node has been inserted, no rotation was necessary!')
+        # nodes for rotation
+        x = nodes[0] # child of unbalance node
+        u = nodes[1] # unbalanced node range(-2; 2)
+        # rotation right if [-1,-2]
+        if (x.bf == -1 and u.bf == -2):
+            self._rotate_right(x, u)
+            print('Node is inserted, right rotation has occured!')
+        # rotation left if [1,2]
+        elif (x.bf == 1 and u.bf == 2):
+            self._rotate_left(x, u)
+            print('Node is inserted, left rotation has occured!')
+        # rotation right_left if [-1,2]
+        elif (x.bf == -1 and u.bf == 2):
+            self._rotate_right_left()
+            print('Node is inserted, right-left rotation has occured!')
+        # rotation left_right if [1,-2]
+        elif (x.bf == 1 and u.bf == -2):
+            self._rotate_left_right()
+            print('Node is inserted, left-right rotation has occured!')
+        # Else no rotation is needed!
+        else:
+            print('Error: set of balance factors not recognized!')
 
     # Simple Rotations #
 
-    def _rotate_left(self, y):
-        # y is the right child of the right node we have to rotate around
+    def _rotate_left(self, x, u):
         # 'right-right situation'
         # cache nodes that are needed for the operation
-        x = y.parent
-        u = x.parent
         z = x.left
         p = u.parent
         # new parent of z
@@ -94,17 +167,13 @@ class AdelsonVelskyLandis():
         if x.parent is None:
             # update the root
             self.root = x
-        # recalculate balance factors
-        self._cal_bf(u)
-        self._cal_bf(x)
-        self._cal_bf(y)
+        # update balance factors
+        x.bf = 0
+        u.bf = 0
 
-    def _rotate_right(self, y):
-        # y is the left child of the left node we have to rotate around
+    def _rotate_right(self, x, u):
         # 'left-left situation'
         # cache nodes that are needed for the operation
-        x = y.parent
-        u = x.parent
         z = x.right
         p = u.parent
         # new parent of z
@@ -129,10 +198,9 @@ class AdelsonVelskyLandis():
         if x.parent is None:
             # update the root
             self.root = x
-        # recalculate balance factors
-        self._cal_bf(u)
-        self._cal_bf(x)
-        self._cal_bf(y)
+# update balance factors
+        x.bf = 0
+        u.bf = 0
 
     # Double Rotations #
 
