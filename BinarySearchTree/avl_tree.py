@@ -96,9 +96,9 @@ class AdelsonVelskyLandis():
         while cur.parent is not None:
             # calculate parents balance factor
             self._cal_bf(cur.parent)
-            # print(cur.parent.bf)
+            # if breakpoint was found
             if (cur.parent.bf is -2 or cur.parent.bf is 2):
-                # stop and pass balance factors
+                # stop and pass nodes of interest
                 return [cur, cur.parent]
             # take a step and repeat
             cur = cur.parent
