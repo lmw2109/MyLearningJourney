@@ -2,6 +2,8 @@
 # Any uncommented code is most-likely explained in my simple implementation
 # of a Binary Search Tree: see 'bst.py'
 
+from math import log, log2, sqrt
+
 class Node:
 
     def __init__(self, key, data=None, left=None, right=None, parent=None, bf=None):
@@ -30,6 +32,9 @@ class AdelsonVelskyLandis():
     def visualize(self):
         if self.root:
             print(self.root.visualize(0))
+            # 
+            print('Height is: ' + str(self.height(self.root)))
+            print('Nodes: ' + str(self.count(self.root)))
 
     ### MAIN METHODS ###
 
@@ -52,7 +57,7 @@ class AdelsonVelskyLandis():
         if node is None:
             self.root = new_node
             self.root.bf = 0
-            return
+            return print('Node has been inserted as root')
         while node is not None:
             parent = node
             if node.key == key:
@@ -97,7 +102,7 @@ class AdelsonVelskyLandis():
             # calculate parents balance factor
             self._cal_bf(cur.parent)
             # if breakpoint was found
-            if (cur.parent.bf is -2 or cur.parent.bf is 2):
+            if (cur.parent.bf == -2 or cur.parent.bf == 2):
                 # stop and pass nodes of interest
                 return [cur, cur.parent]
             # take a step and repeat
@@ -108,32 +113,29 @@ class AdelsonVelskyLandis():
     def _rotation_decision_insert(self, node):
         # retrace and find breakpoint
         nodes = self._retrace(node)
-
-        ## TEMPORARY FOR TESTING ##
-        self.visualize()
-    
         # In case there is no breakpoint return
         if nodes == None:
-            return print('Node has been inserted, no rotation was necessary!')
-        # nodes for rotation
+            # print('Node has been inserted, no rotation was necessary!')
+            return
+        # nodes for simple rotation
         x = nodes[0] # child of unbalance node
         u = nodes[1] # unbalanced node range(-2; 2)
         # rotation right if [-1,-2]
         if (x.bf == -1 and u.bf == -2):
             self._rotate_right(x, u)
-            print('Node is inserted, right rotation has occured!')
+            # print('Node is inserted, right rotation has occured!')
         # rotation left if [1,2]
         elif (x.bf == 1 and u.bf == 2):
             self._rotate_left(x, u)
-            print('Node is inserted, left rotation has occured!')
+            # print('Node is inserted, left rotation has occured!')
         # rotation right_left if [-1,2]
         elif (x.bf == -1 and u.bf == 2):
-            self._rotate_right_left()
-            print('Node is inserted, right-left rotation has occured!')
+            self._rotate_right_left(x, u)
+            # print('Node is inserted, right-left rotation has occured!')
         # rotation left_right if [1,-2]
         elif (x.bf == 1 and u.bf == -2):
-            self._rotate_left_right()
-            print('Node is inserted, left-right rotation has occured!')
+            self._rotate_left_right(x, u)
+            # print('Node is inserted, left-right rotation has occured!')
         # Else no rotation is needed!
         else:
             print('Error: set of balance factors not recognized!')
@@ -167,7 +169,7 @@ class AdelsonVelskyLandis():
         if x.parent is None:
             # update the root
             self.root = x
-        # update balance factors
+        # update balance factors (will be expanded with deletion)
         x.bf = 0
         u.bf = 0
 
@@ -198,17 +200,33 @@ class AdelsonVelskyLandis():
         if x.parent is None:
             # update the root
             self.root = x
-# update balance factors
+    # update balance factors (will be expanded with deletion)
         x.bf = 0
         u.bf = 0
 
     # Double Rotations #
 
-    def _rotate_right_left():
-        ...
+    # Subtree of right-heavy tree is left-heavy
+    def _rotate_right_left(self, x, u):
+        # y in this case is x's left child
+        y = x.left
+        # first rotate left heavy-tree to be right-heavy
+        self._rotate_right(y, x)
+        # now a left rotation of the tree also balances the subtree
+        self._rotate_left(y, u)
+        # recal bf of x as it was set to 0 in step 1
+        self._cal_bf(x)
 
-    def _rotate_left_right():
-        ...
+    # Subtree of left-heavy tree is right-heavy
+    def _rotate_left_right(self, x, u):
+        # y in this case is x's right child
+        y = x.right
+        # first rotate right heavy-tree to be left-heavy
+        self._rotate_left(y, x)
+        # now a right rotation of the tree also balances the subtree
+        self._rotate_right(y, u)
+        # recal bf of x as it was set to 0 in step 1
+        self._cal_bf(x)
 
     ### ADDITIONAL FUNCTIONS ###
 
@@ -238,16 +256,42 @@ class AdelsonVelskyLandis():
             return max(self.height(node.left), self.height(node.right)) + 1
         else:
             return 0
-    
+
+    # Returns a report of the height-interval of an AVL-Tree at n nodes
+    def height_interval(self):
+        # N nodes in the tree
+        n = self.count(self.root)
+        # Golden ratio
+        phi = (1 + sqrt(5))/2
+        # Bias
+        u = log2(5)
+        v = 2*log2(phi)
+        b = (u/v-2)
+        # Calculation min_height
+        min = log2(n+1)
+        # Calculation max_height
+        max = log(n+2, phi)-b
+        # Calculation of mean value
+        mean = (max + min)/2
+
+        print('For an AVL-Tree of '+ str(n) +' nodes the height is: ')
+        print('minimally: ' + str(min))
+        print('maximally: ' + str(max))
+        print('The mean is: '+ str(mean))
+
+        print(round(b, 8))
+        print(round(phi,8))
+
+
     # Count
     def count(self, node):
         if self.root is None:
             return 0
         count = 1
         if node.left:
-            count += self.bst_count(node.left)
+            count += self.count(node.left)
         if node.right:
-            count += self.bst_count(node.right)
+            count += self.count(node.right)
         return count
 
     # TEMPORARY FOR TESTS
