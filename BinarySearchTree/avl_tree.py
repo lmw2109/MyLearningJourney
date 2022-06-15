@@ -279,10 +279,6 @@ class AdelsonVelskyLandis():
         print('maximally: ' + str(max))
         print('The mean is: '+ str(mean))
 
-        print(round(b, 8))
-        print(round(phi,8))
-
-
     # Count
     def count(self, node):
         if self.root is None:
@@ -293,27 +289,3 @@ class AdelsonVelskyLandis():
         if node.right:
             count += self.count(node.right)
         return count
-
-    # TEMPORARY FOR TESTS
-
-    # Insertion 
-    def insert(self, new_node):
-        key = new_node.key
-        node = self.root
-        if node is None:
-            self.root = new_node
-            return
-        while node is not None:
-            parent = node
-            if node.key == key:
-                print('Node is already in the tree!')
-                return
-            elif node.key > key:
-                node = node.left
-            elif node.key < key:
-                node = node.right
-        if parent.key > key:
-            parent.left = new_node
-        else:
-            parent.right = new_node
-        new_node.parent = parent
