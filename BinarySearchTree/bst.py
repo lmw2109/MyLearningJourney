@@ -126,11 +126,14 @@ class BinarySearchTree:
             else:
                 # else node must be right node
                 node.parent.right = child_node
+            # new parent of child_node (if there was)
+            if child_node:
+                child_node.parent = node.parent
         else:
             # Else node must be root
             self.root = child_node
-        # Remove parent pointer
-        node.parent = None
+            # root has no parent
+            child_node.parent = None
 
     ### ADDITIONAL COOL METHODS OF A BST ###
 
