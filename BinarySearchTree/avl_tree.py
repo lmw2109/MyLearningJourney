@@ -22,7 +22,7 @@ class Node:
         return result
 
     def __repr__(self):
-        return 'Object with key: ' + str(self.key) # + ' and BF: ' + str(self.bf)
+        return 'Object with key: ' + str(self.key) + ' and BF: ' + str(self.bf)
 
 class AdelsonVelskyLandis():
 
@@ -33,9 +33,9 @@ class AdelsonVelskyLandis():
         if self.root:
             print(self.root.visualize(0))
             # utilizing the additional information methods below
-            print('Height is: ' + str(self.height(self.root)))
-            print('Nodes: ' + str(self.count(self.root)))
-            self.height_interval()
+            # print('Height is: ' + str(self.height(self.root)))
+            # print('Nodes: ' + str(self.count(self.root)))
+            # self.height_interval()
 
     # Balance factor helper function
     def _cal_bf(self, node):
@@ -97,7 +97,7 @@ class AdelsonVelskyLandis():
         if node is None:
             self.root = new_node
             self.root.bf = 0
-            return print('Node has been inserted as root')
+            return
         while node is not None:
             parent = node
             if node.key == key:
@@ -149,7 +149,7 @@ class AdelsonVelskyLandis():
         else:
             self.root = child_node
             child_node.parent = None
-        # updaate bf values and rotate if necessary
+        # update bf values and rotate if necessary
         self._rotation_decision(parent)   
 
     ### NODE ROTATION METHODS ###
@@ -325,23 +325,14 @@ class AdelsonVelskyLandis():
     def height_interval(self):
         # N nodes in the tree
         n = self.count(self.root)
-        # Golden ratio
-        phi = (1 + sqrt(5))/2
-        # Bias
-        u = log2(5)
-        v = 2*log2(phi)
-        b = (u/v-2)
-        # Calculation min_height
-        min = log2(n+1)
-        # Calculation max_height
-        max = log(n+2, phi)-b
-        # Calculation of mean value
-        mean = (max + min)/2
 
-        print('For an AVL-Tree of '+ str(n) +' nodes the height is: ')
-        print('minimally: ' + str(min))
-        print('maximally: ' + str(max))
-        print('expected to be about: '+ str(mean))
+        # Calculation min_height
+        lower = log2(n+1)
+        # Calculation max_height
+        upper = 1.4405*log2(n+2)-0.3277
+
+        print('For an AVL-Tree of '+ str(n) +' nodes the height lies in between')
+        print(str(lower) + ' and ' +  str(upper))
 
     # Count
     def count(self, node):
@@ -353,3 +344,10 @@ class AdelsonVelskyLandis():
         if node.right:
             count += self.count(node.right)
         return count
+
+    # Report
+    def report(self):
+        print('Root: ' + str(self.root))
+        print('Height is: ' + str(self.height(self.root)))
+        print('Nodes: ' + str(self.count(self.root)))
+        self.height_interval()
